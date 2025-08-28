@@ -33,4 +33,5 @@ yarn-error.log*
 next-env.d.ts
 
 # logs
-push.log
+push.log*.mp4
+*.node

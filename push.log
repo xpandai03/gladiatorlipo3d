@@ -1,0 +1,8 @@
+remote: error: Trace: f88d70610a032de38ddfd31b4a698cd12bc9d786147b246835ca8c70f32d90c1        
+remote: error: See https://gh.io/lfs for more information.        
+remote: error: File node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node is 109.64 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File vecteezy_artificial-intelligence-network-ai-line-circuit-technology_24148810.mp4 is 180.55 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To https://github.com/xpandai03/gladiatorlipo3d.git
+ ! [remote rejected] main -> main (pre-receive hook declined)
+error: failed to push some refs to 'https://github.com/xpandai03/gladiatorlipo3d.git'
