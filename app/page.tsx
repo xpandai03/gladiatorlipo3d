@@ -2,6 +2,7 @@
 
 import Spline from '@splinetool/react-spline';
 import { useState, useEffect, useRef } from 'react';
+import { AscendModal } from '@/components/AscendIntake';
 
 const SCENE_URL =
   'https://prod.spline.design/6s3QjaKZREdGtVKe/scene.splinecode?v=rev1'; // bump rev on each publish
@@ -26,30 +27,56 @@ const reviews = [
 ];
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [typedText, setTypedText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [resultsVisible, setResultsVisible] = useState(false);
   const [reviewsVisible, setReviewsVisible] = useState(false);
   const [currentReview, setCurrentReview] = useState(0);
   const [videoInView, setVideoInView] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const reviewsRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Control video playback based on visibility
+  // Typing animation effect
   useEffect(() => {
-    if (iframeRef.current) {
+    const text = "Begin your ascension";
+    let index = 0;
+    
+    const typingInterval = setInterval(() => {
+      if (index < text.length) {
+        setTypedText(text.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(typingInterval);
+        // Hold the complete text for 1 second, then fade out
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+      }
+    }, 70); // 70ms per character for smooth typing
+    
+    return () => clearInterval(typingInterval);
+  }, []); // Only run once on mount
+
+  // Control video playback based on visibility and interaction
+  useEffect(() => {
+    if (iframeRef.current && hasInteracted) {
       const iframe = iframeRef.current;
       if (videoInView) {
-        // Play video when in view
+        // Play video when in view (after user has interacted)
         iframe.contentWindow?.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
       } else {
         // Pause video when out of view
         iframe.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
       }
     }
-  }, [videoInView]);
+  }, [videoInView, hasInteracted]);
 
   useEffect(() => {
     const contentObserver = new IntersectionObserver(
@@ -128,13 +155,25 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-black text-white">
-      {/* Fixed EMER Logo */}
-      <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] pointer-events-none">
-        <span className="text-white text-5xl md:text-6xl font-black tracking-[0.15em]">
-          EMER
-        </span>
-      </div>
+    <>
+      {/* Loading Screen */}
+      {isLoading && (
+        <div className={`fixed inset-0 bg-white z-[400] flex items-center justify-center transition-opacity duration-500 ${!isLoading ? 'opacity-0' : 'opacity-100'}`}>
+          <h1 className="text-black text-3xl md:text-4xl font-thin tracking-wider">
+            {typedText}
+            <span className="animate-pulse ml-1">|</span>
+          </h1>
+        </div>
+      )}
+
+      {/* Main Content - fade in after loading */}
+      <main className={`bg-black text-white transition-opacity duration-1000 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Fixed EMER Logo */}
+        <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[200] pointer-events-none">
+          <span className={`text-5xl md:text-6xl font-black tracking-[0.15em] transition-colors duration-300 ${isModalOpen ? 'text-black' : 'text-white'}`}>
+            EMER
+          </span>
+        </div>
 
       {/* Spline Hero Section - First viewport */}
       <section className="min-h-[100svh] relative">
@@ -144,10 +183,8 @@ export default function Home() {
         </div>
 
         {/* Sleek Minimalist Button - Fixed at bottom */}
-        <a
-          href="https://v0-chat-ui-with-vibration-mu-pearl.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() => setIsModalOpen(true)}
           className="
             fixed
             bottom-12
@@ -177,7 +214,7 @@ export default function Home() {
           "
         >
           Ascend
-        </a>
+        </button>
 
         {/* Reduced-motion poster */}
         <img
@@ -192,15 +229,52 @@ export default function Home() {
         <div className="h-16"></div>
         
         <div className="flex-1 relative mx-8">
-          <div className="absolute inset-0">
+          <div 
+            className="absolute inset-0 cursor-pointer group"
+            onClick={() => {
+              if (!hasInteracted) {
+                setHasInteracted(true);
+              }
+              setIsMuted(!isMuted);
+              if (iframeRef.current) {
+                iframeRef.current.contentWindow?.postMessage(
+                  `{"event":"command","func":"${isMuted ? 'unMute' : 'mute'}","args":""}`, 
+                  '*'
+                );
+              }
+            }}
+          >
             <iframe
               ref={iframeRef}
-              className="w-full h-full"
-              src={`https://www.youtube.com/embed/-qbKcdy5s-U?${videoInView ? 'autoplay=1' : ''}&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`}
+              className="w-full h-full pointer-events-none"
+              src={`https://www.youtube.com/embed/-qbKcdy5s-U?autoplay=${videoInView ? '1' : '0'}&mute=1&playsinline=1&rel=0&modestbranding=1&enablejsapi=1`}
               title="GLADIATOR LIPO — intro video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             />
+            
+            {/* Mute/Unmute Indicator */}
+            <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-sm rounded-full p-3 transition-all duration-200 group-hover:bg-black/70">
+              {isMuted ? (
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+              )}
+            </div>
+            
+            {/* Click to unmute prompt (shows when muted) */}
+            {isMuted && videoInView && (
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                <div className="bg-black/70 text-white px-6 py-3 rounded-full text-sm uppercase tracking-wider animate-pulse">
+                  Click to unmute
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
@@ -363,5 +437,12 @@ export default function Home() {
         </div>
       </section>
     </main>
+    
+    {/* Ascend Intake Modal */}
+    <AscendModal 
+      isOpen={isModalOpen} 
+      onClose={() => setIsModalOpen(false)} 
+    />
+    </>
   );
 }
