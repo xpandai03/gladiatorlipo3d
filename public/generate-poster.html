@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Poster</title>
+</head>
+<body style="margin: 0; background: #000;">
+    <canvas id="canvas" width="1920" height="1080"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Create dark gradient background
+        const gradient = ctx.createRadialGradient(960, 540, 100, 960, 540, 1000);
+        gradient.addColorStop(0, '#0a0a0a');
+        gradient.addColorStop(1, '#000000');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 1920, 1080);
+        
+        // Add some abstract elements
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 2;
+        
+        // Draw abstract circles
+        for (let i = 0; i < 5; i++) {
+            ctx.beginPath();
+            ctx.arc(960, 540, 100 + i * 80, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        // Add text
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 120px system-ui';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.letterSpacing = '20px';
+        ctx.fillText('GLADIATOR', 960, 480);
+        
+        ctx.font = '32px system-ui';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.fillText('Form follows function. Origin unknown.', 960, 580);
+        
+        // Convert to JPEG and trigger download
+        canvas.toBlob(function(blob) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'poster.jpg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }, 'image/jpeg', 0.95);
+    </script>
+</body>
+</html>

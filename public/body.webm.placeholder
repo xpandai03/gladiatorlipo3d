@@ -1,0 +1,9 @@
+This is a placeholder for the body.webm video file.
+
+To add the actual video:
+1. Create or obtain a WebM video file
+2. Name it "body.webm"
+3. Place it in this public directory
+4. Remove this placeholder file
+
+The video will be used for scroll-based scrubbing animation in the BodyFlythrough component.

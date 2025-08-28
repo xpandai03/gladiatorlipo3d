@@ -1,0 +1,18 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1920" height="1080" fill="url(#gradient)"/>
+  <text x="960" y="480" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">
+    EMER DESIGNS
+  </text>
+  <text x="960" y="580" font-family="Arial, sans-serif" font-size="36" fill="#888888" text-anchor="middle">
+    Visual Excellence
+  </text>
+  <circle cx="960" cy="750" r="80" stroke="white" stroke-width="2" fill="none" opacity="0.3"/>
+  <circle cx="960" cy="750" r="60" stroke="white" stroke-width="2" fill="none" opacity="0.4"/>
+  <circle cx="960" cy="750" r="40" stroke="white" stroke-width="2" fill="none" opacity="0.5"/>
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a1a2e"/>
+      <stop offset="1" stop-color="#16213e"/>
+    </linearGradient>
+  </defs>
+</svg>
