@@ -22,10 +22,18 @@ export interface MetaData {
   path: string;
 }
 
-export interface SubmissionPayload extends FormData {
+export interface SubmissionPayload {
+  name: string;
+  email: string;
+  phone: string;
+  phone_raw: string;
+  note?: string;
+  consent_communications: boolean;
+  timestamp: string;
   source: string;
-  utm: UTMParams;
-  meta: MetaData;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
 }
 
 export interface StepConfig {
